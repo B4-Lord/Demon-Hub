@@ -54,8 +54,8 @@ end
 -- HUB
 --==================================================
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,500,0,300)
-main.Position = UDim2.new(0.5,-250,0.5,-150)
+main.Size = UDim2.new(0,650,0,420)
+main.Position = UDim2.new(0.5,-325,0.5,-210)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 main.Visible = true
 main.Active = true
@@ -103,26 +103,38 @@ local function sideButton(text,y)
     return b
 end
 
-local espBtn = sideButton("ESP",0)
-local playerBtn = sideButton("PLAYER",50)
+local playerBtn = sideButton("PLAYER",0)
+local espBtn = sideButton("ESP",50)
 local tpBtn = sideButton("TELEPORT",100)
-local aboutBtn = sideButton("ABOUT",150)
-local othersBtn = sideButton("OTHERS",200)
+local othersBtn = sideButton("OTHERS",150)
+local aboutBtn = sideButton("ABOUT",200)
 
-local buttons = {espBtn, playerBtn, tpBtn, aboutBtn, othersBtn}
+local buttons = {playerBtn, espBtn, tpBtn, othersBtn, aboutBtn}
+
 
 --==================================================
 -- PAINÉIS
 --==================================================
 local function panel()
-    local p = Instance.new("Frame", content)
+    local p = Instance.new("ScrollingFrame", content)
     p.Size = UDim2.new(1,-150,1,0)
     p.Position = UDim2.new(0,150,0,0)
+    p.CanvasSize = UDim2.new(0,0,0,0)
+    p.ScrollBarThickness = 6
     p.BackgroundColor3 = Color3.fromRGB(22,22,22)
     p.Visible = false
     Instance.new("UICorner", p)
+
+    local layout = Instance.new("UIListLayout", p)
+    layout.Padding = UDim.new(0,10)
+
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        p.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y + 20)
+    end)
+
     return p
 end
+
 
 local espPanel = panel()
 local playerPanel = panel()
@@ -279,6 +291,7 @@ end)
 local tokenBtn = Instance.new("TextButton", espPanel)
 tokenBtn.Size = UDim2.new(0,260,0,45)
 tokenBtn.Position = UDim2.new(0,20,0,260)
+tokenBtn.Text = "ESP MOEDAS"
 tokenBtn.Font = Enum.Font.GothamBold
 tokenBtn.TextSize = 16
 tokenBtn.TextColor3 = Color3.new(1,1,1)
@@ -764,13 +777,13 @@ end)
 --==================================================
 -- CONTROLES DOS BOTÕES LATERAIS
 --==================================================
-espBtn.MouseButton1Click:Connect(function() showPanel(espPanel, espBtn) end)
 playerBtn.MouseButton1Click:Connect(function() showPanel(playerPanel, playerBtn) end)
+espBtn.MouseButton1Click:Connect(function() showPanel(espPanel, espBtn) end)
 tpBtn.MouseButton1Click:Connect(function() showPanel(tpPanel, tpBtn) end)
-aboutBtn.MouseButton1Click:Connect(function() showPanel(aboutPanel, aboutBtn) end)
 othersBtn.MouseButton1Click:Connect(function() showPanel(othersPanel, othersBtn) end)
+aboutBtn.MouseButton1Click:Connect(function() showPanel(aboutPanel, aboutBtn) end)
 
-showPanel(espPanel, espBtn)
+showPanel(playerPanel, playerBtn)
 
 --==================================================
 -- TECLA Z (ABRIR HUB)
