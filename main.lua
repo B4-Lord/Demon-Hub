@@ -1,10 +1,9 @@
---==================================================
+--================================================== 
 -- SERVIÇOS
 --==================================================
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-
 local LocalPlayer = Players.LocalPlayer
 
 --==================================================
@@ -50,7 +49,7 @@ local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0,500,0,300)
 main.Position = UDim2.new(0.5,-250,0.4,0)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
-main.Visible = true
+main.Visible = false
 main.Active = true
 main.Draggable = true
 Instance.new("UICorner", main)
@@ -64,7 +63,7 @@ top.BackgroundColor3 = Color3.fromRGB(25,25,25)
 
 local title = Instance.new("TextLabel", top)
 title.Size = UDim2.new(1,0,1,0)
-title.Text = "Demon Hub"
+title.Text = "B4 + RICK"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.TextColor3 = Color3.new(1,1,1)
