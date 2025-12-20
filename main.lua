@@ -70,7 +70,7 @@ top.BackgroundColor3 = Color3.fromRGB(25,25,25)
 
 local title = Instance.new("TextLabel", top)
 title.Size = UDim2.new(1,0,1,0)
-title.Text = "B4 + RICK"
+title.Text = "Demon Hub"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.TextColor3 = Color3.new(1,1,1)
