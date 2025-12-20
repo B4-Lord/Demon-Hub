@@ -23,6 +23,7 @@ local BTN_ACTIVE = Color3.fromRGB(70,70,70)
 -- GUI BASE
 --==================================================
 local gui = Instance.new("ScreenGui")
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Name = "HubUI"
 gui.ResetOnSpawn = false
 gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
@@ -54,19 +55,21 @@ end
 --==================================================
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0,500,0,300)
-main.Position = UDim2.new(0.5,-250,0.4,0)
+main.Position = UDim2.new(0.5,-250,0.5,-150)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 main.Visible = true
 main.Active = true
 main.Draggable = true
+main.ZIndex = 10
 Instance.new("UICorner", main)
 
---==================================================
--- TOPO
---==================================================
 local top = Instance.new("Frame", main)
 top.Size = UDim2.new(1,0,0,40)
 top.BackgroundColor3 = Color3.fromRGB(25,25,25)
+top.ZIndex = 11
+--==================================================
+-- TOPO
+--==================================================
 
 local title = Instance.new("TextLabel", top)
 title.Size = UDim2.new(1,0,1,0)
@@ -335,11 +338,6 @@ end)
 --==================================================
 -- PLAYER PANEL COMPLETO (GODMODE + NOCLIP + SPEED + SUPERJUMP + FLY)
 --==================================================
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
 
 -- Configurações iniciais
 local GOD_ON, NOCLIP_ON, isFlying = false, false, false
