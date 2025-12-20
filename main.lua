@@ -1,10 +1,17 @@
 --================================================== 
 -- SERVIÇOS
 --==================================================
+
+repeat task.wait() until game:IsLoaded()
+
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+
 local LocalPlayer = Players.LocalPlayer
+repeat task.wait() until LocalPlayer
+repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+repeat task.wait() until LocalPlayer.Character
 
 --==================================================
 -- CORES
@@ -326,7 +333,7 @@ tokenBtn.MouseButton1Click:Connect(function()
 end)
 
 --==================================================
--- PLAYER PANEL COMPLETO (GODMODE + NOCLIP + SPEED + SUPERJUMP + FLY COM CHECKBOX)
+-- PLAYER PANEL COMPLETO (GODMODE + NOCLIP + SPEED + SUPERJUMP + FLY)
 --==================================================
 
 local Players = game:GetService("Players")
@@ -336,14 +343,11 @@ local LocalPlayer = Players.LocalPlayer
 
 -- Configurações iniciais
 local GOD_ON, NOCLIP_ON, isFlying = false, false, false
-local speedValue, defaultSpeed = 16, 16
-local superJumpPower, defaultJump = 50, 50
-local flySpeed, defaultFly = 50, 50
+local speedValue = 16
+local superJumpPower = 50
+local flySpeed = 50
 local FlyControl = {Forward=0, Backward=0, Left=0, Right=0, Up=0, Down=0}
 local bodyVelocity = nil
-
--- Checkboxes ativos
-local speedActive, jumpActive, flyActive = false, false, false
 
 -- Funções utilitárias
 local function getChar() return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait() end
@@ -421,54 +425,33 @@ local function stopFly()
 end
 
 --==================================================
--- CRIAÇÃO DE SLIDERS COM CHECKBOX
+-- CRIAÇÃO DE SLIDERS
 --==================================================
-local function createSliderWithCheckbox(name, defaultY, minVal, maxVal, initial, defaultValue, callback)
-    -- Checkbox
-    local check = Instance.new("TextButton", playerPanel)
-    check.Size = UDim2.new(0,20,0,20)
-    check.Position = UDim2.new(0,10,0,defaultY)
-    check.Text = ""
-    check.BackgroundColor3 = Color3.fromRGB(70,70,70)
-    Instance.new("UICorner", check)
-    local active = false
-
-    local function updateCheck(state)
-        active = state
-        check.BackgroundColor3 = active and Color3.fromRGB(70,200,100) or Color3.fromRGB(70,70,70)
-        if not active then
-            callback(defaultValue)
-        else
-            callback(initial)
-        end
-    end
-
-    check.MouseButton1Click:Connect(function()
-        updateCheck(not active)
-    end)
-
+local function createSlider(name, defaultY, minVal, maxVal, initial, callback)
     -- Label
     local label = Instance.new("TextLabel", playerPanel)
-    label.Size = UDim2.new(0,240,0,20)
-    label.Position = UDim2.new(0,40,0,defaultY)
+    label.Size = UDim2.new(0,260,0,20)
+    label.Position = UDim2.new(0,20,0,defaultY)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.Gotham
     label.TextSize = 14
     label.Text = name..": "..initial
 
-    -- Slider
+    -- Frame slider
     local sliderFrame = Instance.new("Frame", playerPanel)
     sliderFrame.Size = UDim2.new(0,260,0,20)
     sliderFrame.Position = UDim2.new(0,20,0,defaultY+20)
     sliderFrame.BackgroundColor3 = Color3.fromRGB(50,50,50)
     Instance.new("UICorner", sliderFrame)
 
+    -- Fill
     local fill = Instance.new("Frame", sliderFrame)
     fill.Size = UDim2.new((initial-minVal)/(maxVal-minVal),0,1,0)
     fill.BackgroundColor3 = Color3.fromRGB(100,200,255)
     Instance.new("UICorner", fill)
 
+    -- TextBox para digitar valor
     local box = Instance.new("TextBox", playerPanel)
     box.Size = UDim2.new(0,60,0,20)
     box.Position = UDim2.new(0,220,0,defaultY)
@@ -480,15 +463,16 @@ local function createSliderWithCheckbox(name, defaultY, minVal, maxVal, initial,
     box.ClearTextOnFocus = false
     Instance.new("UICorner", box)
 
+    -- Atualiza slider
     local function updateSlider(value)
         value = math.clamp(value, minVal, maxVal)
         fill.Size = UDim2.new((value-minVal)/(maxVal-minVal),0,1,0)
         label.Text = name..": "..math.floor(value)
         box.Text = tostring(math.floor(value))
-        if active then callback(value) end
+        callback(value)
     end
 
-    -- Drag slider
+    -- Arrastar slider
     local dragging = false
     sliderFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true; main.Draggable = false end
@@ -505,26 +489,25 @@ local function createSliderWithCheckbox(name, defaultY, minVal, maxVal, initial,
         end
     end)
 
+    -- Digitar valor
     box.FocusLost:Connect(function()
         local val = tonumber(box.Text)
         if val then updateSlider(val) end
     end)
 
-    return updateSlider, updateCheck
+    return updateSlider
 end
 
--- Criar sliders com checkbox
-local updateSpeed, checkSpeed = createSliderWithCheckbox("SPEED", 170, 16, 500, speedValue, defaultSpeed, function(val)
+-- Criar sliders
+local updateSpeed = createSlider("SPEED", 170, 16, 500, speedValue, function(val)
     speedValue = val
     getHumanoid().WalkSpeed = speedValue
 end)
-
-local updateJump, checkJump = createSliderWithCheckbox("SUPERJUMP", 220, 50, 500, superJumpPower, defaultJump, function(val)
+local updateJump = createSlider("SUPERJUMP", 220, 50, 500, superJumpPower, function(val)
     superJumpPower = val
     getHumanoid().JumpPower = superJumpPower
 end)
-
-local updateFly, checkFly = createSliderWithCheckbox("FLY SPEED", 270, 10, 500, flySpeed, defaultFly, function(val)
+local updateFly = createSlider("FLY SPEED", 270, 10, 500, flySpeed, function(val)
     flySpeed = val
 end)
 
@@ -533,11 +516,16 @@ end)
 --==================================================
 RunService.RenderStepped:Connect(function()
     -- Noclip
-    if NOCLIP_ON then
-        for _,v in ipairs(getChar():GetDescendants()) do
-            if v:IsA("BasePart") then v.CanCollide=false end
+if NOCLIP_ON then
+    local char = LocalPlayer.Character
+    if char then
+        for _,v in ipairs(char:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = false
+            end
         end
     end
+end
     -- Fly
     if isFlying and bodyVelocity then
         local camCFrame = workspace.CurrentCamera.CFrame
@@ -568,7 +556,7 @@ UIS.InputEnded:Connect(function(input)
 end)
 
 --==================================================
--- BOTÕES GODMODE / NOCLIP / FLY
+-- CONEXÕES DOS BOTÕES
 --==================================================
 godBtn.MouseButton1Click:Connect(function()
     GOD_ON = not GOD_ON
@@ -585,6 +573,144 @@ end)
 -- GODMODE NO SPAWN
 LocalPlayer.CharacterAdded:Connect(function(char)
     if GOD_ON then applyGod() end
+end)
+
+--==================================================
+-- TELEPORT + OTHERS COM LISTA CLICÁVEL
+--==================================================
+local function createPlayerList(panel, textBox)
+    local listFrame = Instance.new("ScrollingFrame", panel)
+    listFrame.Size = UDim2.new(0,260,0,150)
+    listFrame.Position = UDim2.new(0,20,0,130)
+    listFrame.CanvasSize = UDim2.new(0,0,0,0)
+    listFrame.ScrollBarThickness = 6
+    listFrame.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    Instance.new("UICorner", listFrame)
+
+    local listLayout = Instance.new("UIListLayout", listFrame)
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Padding = UDim.new(0,5)
+
+    local function refreshList()
+        for _, child in pairs(listFrame:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
+        end
+
+        for _,p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                local btn = Instance.new("TextButton")
+                btn.Size = UDim2.new(1,0,0,30)
+                btn.Text = p.Name
+                btn.Font = Enum.Font.Gotham
+                btn.TextSize = 14
+                btn.TextColor3 = Color3.new(1,1,1)
+                btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+                Instance.new("UICorner", btn)
+                btn.Parent = listFrame
+                btn.MouseButton1Click:Connect(function()
+                    textBox.Text = p.Name
+                    notifyMsg("Selecionado: "..p.Name)
+                end)
+            end
+        end
+
+        listFrame.CanvasSize = UDim2.new(0,0,0,listLayout.AbsoluteContentSize.Y + 5)
+    end
+
+    Players.PlayerAdded:Connect(refreshList)
+    Players.PlayerRemoving:Connect(refreshList)
+    refreshList()
+end
+
+-- TELEPORT
+local tpBox = Instance.new("TextBox", tpPanel)
+tpBox.Size = UDim2.new(0,260,0,45)
+tpBox.Position = UDim2.new(0,20,0,20)
+tpBox.PlaceholderText = "Nome do player"
+tpBox.Font = Enum.Font.Gotham
+tpBox.TextSize = 16
+tpBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+tpBox.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", tpBox)
+
+local tpGo = Instance.new("TextButton", tpPanel)
+tpGo.Size = UDim2.new(0,260,0,45)
+tpGo.Position = UDim2.new(0,20,0,75)
+tpGo.Text = "TELEPORTAR"
+tpGo.Font = Enum.Font.GothamBold
+tpGo.TextSize = 16
+tpGo.TextColor3 = Color3.new(1,1,1)
+tpGo.BackgroundColor3 = Color3.fromRGB(70,120,255)
+Instance.new("UICorner", tpGo)
+
+tpGo.MouseButton1Click:Connect(function()
+    local t = Players:FindFirstChild(tpBox.Text)
+    if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = t.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-3)
+        notifyMsg("TELEPORT OK")
+    else
+        notifyMsg("PLAYER NÃO ENCONTRADO")
+    end
+end)
+
+createPlayerList(tpPanel, tpBox)
+
+-- OTHERS (Spectate)
+local otherBox = Instance.new("TextBox", othersPanel)
+otherBox.Size = UDim2.new(0,260,0,45)
+otherBox.Position = UDim2.new(0,20,0,20)
+otherBox.PlaceholderText = "Nome do player"
+otherBox.Font = Enum.Font.Gotham
+otherBox.TextSize = 16
+otherBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+otherBox.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", otherBox)
+
+local spectateBtn = Instance.new("TextButton", othersPanel)
+spectateBtn.Size = UDim2.new(0,260,0,45)
+spectateBtn.Position = UDim2.new(0,20,0,75)
+spectateBtn.Text = "ESPECTAR"
+spectateBtn.Font = Enum.Font.GothamBold
+spectateBtn.TextSize = 16
+spectateBtn.TextColor3 = Color3.new(1,1,1)
+spectateBtn.BackgroundColor3 = Color3.fromRGB(70,120,255)
+Instance.new("UICorner", spectateBtn)
+
+local isSpectating = false
+local targetPlayer = nil
+local cam = workspace.CurrentCamera
+local originalCameraType = cam.CameraType
+local originalCameraSubject = cam.CameraSubject
+
+spectateBtn.MouseButton1Click:Connect(function()
+    if not isSpectating then
+        targetPlayer = Players:FindFirstChild(otherBox.Text)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            isSpectating = true
+            spectateBtn.Text = "PARAR ESPECTAR"
+            notifyMsg("ESPECTANDO: "..targetPlayer.Name)
+            cam.CameraType = Enum.CameraType.Scriptable
+        else
+            notifyMsg("PLAYER NÃO ENCONTRADO")
+        end
+    else
+        isSpectating = false
+        spectateBtn.Text = "ESPECTAR"
+        cam.CameraType = originalCameraType
+        cam.CameraSubject = originalCameraSubject
+        notifyMsg("ESPECTAR DESATIVADO")
+    end
+end)
+
+createPlayerList(othersPanel, otherBox)
+
+RunService.RenderStepped:Connect(function()
+    if isSpectating and targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = targetPlayer.Character.HumanoidRootPart
+        cam.CFrame = hrp.CFrame * CFrame.new(0,5,10) * CFrame.Angles(math.rad(-15),0,0)
+    end
 end)
 
 --==================================================
