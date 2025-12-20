@@ -164,6 +164,13 @@ end
 local ESP_ON, ESP_NAME, ESP_DISTANCE, ESP_LINE = false, true, false, false
 local lines = {}
 
+local espOrder = 0
+local function nextEspOrder()
+    espOrder += 1
+    return espOrder
+end
+
+
 local function espToggle(text, y, callback)
     local b = Instance.new("TextButton", espPanel)
     b.Size = UDim2.new(0,260,0,45)
@@ -172,6 +179,7 @@ local function espToggle(text, y, callback)
     b.TextSize = 16
     b.TextColor3 = Color3.new(1,1,1)
     b.BackgroundColor3 = Color3.fromRGB(50,50,50)
+b.LayoutOrder = order
     Instance.new("UICorner", b)
     local function refresh()
         b.Text = text.." : "..(callback() and "ON" or "OFF")
@@ -289,6 +297,8 @@ end)
 -- ESP MOEDAS (LEVEMENTE)
 --==================================================
 local tokenBtn = Instance.new("TextButton", espPanel)
+tokenBtn.LayoutOrder = nextEspOrder()
+
 tokenBtn.Size = UDim2.new(0,260,0,45)
 tokenBtn.Position = UDim2.new(0,20,0,260)
 tokenBtn.Text = "ESP MOEDAS"
@@ -352,6 +362,16 @@ end)
 -- PLAYER PANEL COMPLETO (GODMODE + NOCLIP + SPEED + SUPERJUMP + FLY)
 --==================================================
 
+local playerOrder = 10
+local function nextPlayerOrder()
+    playerOrder += 1
+    return playerOrder
+end
+
+label.LayoutOrder = nextPlayerOrder()
+sliderFrame.LayoutOrder = nextPlayerOrder()
+box.LayoutOrder = label.LayoutOrder
+
 -- Configurações iniciais
 local GOD_ON, NOCLIP_ON, isFlying = false, false, false
 local speedValue = 16
@@ -382,8 +402,13 @@ local function createPlayerButton(parent, text, y)
 end
 
 local godBtn = createPlayerButton(playerPanel, "GODMODE : OFF", 10)
+godBtn.LayoutOrder = 1
+
 local noclipBtn = createPlayerButton(playerPanel, "NOCLIP : OFF", 60)
+noclipBtn.LayoutOrder = 2
+
 local flyBtn = createPlayerButton(playerPanel, "FLY : OFF", 110)
+flyBtn.LayoutOrder = 3
 
 --==================================================
 -- ATUALIZA TEXTOS DOS BOTÕES
@@ -521,6 +546,10 @@ end)
 local updateFly = createSlider("FLY SPEED", 270, 10, 500, flySpeed, function(val)
     flySpeed = val
 end)
+
+label.LayoutOrder = order
+sliderFrame.LayoutOrder = order + 1
+box.LayoutOrder = order
 
 --==================================================
 -- CONTROLE DO FLY / NOCLIP
@@ -668,6 +697,10 @@ end)
 
 createPlayerList(tpPanel, tpBox)
 
+tpBox.LayoutOrder = 1
+tpGo.LayoutOrder = 2
+
+
 -- OTHERS (Spectate)
 local otherBox = Instance.new("TextBox", othersPanel)
 otherBox.Size = UDim2.new(0,260,0,45)
@@ -723,6 +756,9 @@ RunService.RenderStepped:Connect(function()
         cam.CFrame = hrp.CFrame * CFrame.new(0,5,10) * CFrame.Angles(math.rad(-15),0,0)
     end
 end)
+
+otherBox.LayoutOrder = 1
+spectateBtn.LayoutOrder = 2
 
 --==================================================
 -- ABOUT
