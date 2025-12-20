@@ -1,14 +1,11 @@
-repeat task.wait() until game:IsLoaded()
-
+--==================================================
+-- SERVIÇOS
+--==================================================
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
-repeat task.wait() until LocalPlayer
-repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
-
-print("SCRIPT CARREGADO")
 
 --==================================================
 -- CORES
