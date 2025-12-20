@@ -1,10 +1,14 @@
---================================================== 
--- SERVIÇOS
---==================================================
+repeat task.wait() until game:IsLoaded()
+
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+
 local LocalPlayer = Players.LocalPlayer
+repeat task.wait() until LocalPlayer
+repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+
+print("SCRIPT CARREGADO")
 
 --==================================================
 -- CORES
@@ -49,7 +53,7 @@ local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0,500,0,300)
 main.Position = UDim2.new(0.5,-250,0.4,0)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
-main.Visible = false
+main.Visible = true
 main.Active = true
 main.Draggable = true
 Instance.new("UICorner", main)
