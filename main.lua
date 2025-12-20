@@ -499,11 +499,11 @@ local function createSlider(name, defaultY, minVal, maxVal, initial, callback)
 end
 
 -- Criar sliders
-local updateSpeed = createSlider("SPEED", 170, 16, 500, speedValue, function(val)
+local updateSpeed = createSlider("SPEED", 170, 16, 200, speedValue, function(val)
     speedValue = val
     getHumanoid().WalkSpeed = speedValue
 end)
-local updateJump = createSlider("SUPERJUMP", 220, 50, 500, superJumpPower, function(val)
+local updateJump = createSlider("SUPERJUMP", 220, 50, 200, superJumpPower, function(val)
     superJumpPower = val
     getHumanoid().JumpPower = superJumpPower
 end)
