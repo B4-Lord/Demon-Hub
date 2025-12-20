@@ -54,7 +54,7 @@ end
 -- HUB
 --==================================================
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0,500,0,400)
+main.Size = UDim2.new(0,500,0,350)
 main.Position = UDim2.new(0.5,-250,0.5,-150)
 main.BackgroundColor3 = Color3.fromRGB(18,18,18)
 main.Visible = true
