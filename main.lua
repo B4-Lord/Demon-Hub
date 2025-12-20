@@ -112,15 +112,31 @@ local othersBtn = sideButton("OTHERS",200)
 local buttons = {espBtn, playerBtn, tpBtn, aboutBtn, othersBtn}
 
 --==================================================
--- PAINÉIS
+-- PAINÉIS (COM SCROLL AUTOMÁTICO)
 --==================================================
 local function panel()
-    local p = Instance.new("Frame", content)
-    p.Size = UDim2.new(1,-150,1,0)
-    p.Position = UDim2.new(0,150,0,0)
-    p.BackgroundColor3 = Color3.fromRGB(22,22,22)
+    local p = Instance.new("ScrollingFrame", content)
+    p.Size = UDim2.new(1, -150, 1, 0)
+    p.Position = UDim2.new(0, 150, 0, 0)
+    p.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
     p.Visible = false
+
+    p.ScrollBarThickness = 6
+    p.CanvasSize = UDim2.new(0, 0, 0, 0)
+    p.AutomaticCanvasSize = Enum.AutomaticSize.None
+    p.ScrollingDirection = Enum.ScrollingDirection.Y
+    p.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+
     Instance.new("UICorner", p)
+
+    -- Layout automático
+    local layout = Instance.new("UIListLayout", p)
+    layout.Padding = UDim.new(0, 10)
+
+    layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        p.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 20)
+    end)
+
     return p
 end
 
