@@ -13,9 +13,7 @@
 
 ## 📌 Sobre o Demon Hub
 
-**Demon Hub** é um **hub avançado para Roblox**, desenvolvido com foco em **estabilidade**, **performance** e **organização**, reunindo diversas funcionalidades úteis em um único painel moderno e intuitivo.
-
-Criado por **B4_LORD** e **SZRICK**, o script foi projetado para ser **modular**, **fácil de atualizar** e **seguro para uso local (LocalScript)**.
+Criado por **B4_LORD** e **SZRICK**, o script esta em desenvolvimento e tem como funções uteis no jogo Murder Mistery 2 (MM2), mas pode funcionar em outras experiências.
 
 ---
 
@@ -38,7 +36,7 @@ Criado por **B4_LORD** e **SZRICK**, o script foi projetado para ser **modular**
 ### 🔀 Teleport
 - Teleport para player por nome
 - Teleport simples
-- Teleport grudado (modo mochila)
+- Teleport grudado em um player (modo mochila)
 - Sistema seguro de soltar / desgrudar
 
 ### 📜 Interface
@@ -50,18 +48,14 @@ Criado por **B4_LORD** e **SZRICK**, o script foi projetado para ser **modular**
 
 ---
 
-## 🧠 Estrutura do Hub
-
-- Código limpo e organizado
-- Funções separadas por sessão
-- Fácil de editar e expandir
-- Base estável para novos recursos
-
----
 
 ## ▶️ Como Usar
 
-Execute no seu executor Roblox:
+Execute o código abaixo no seu executor Roblox:
 
 ```lua
-loadstring(game:HttpGet("LINK_DO_RAW_AQUI"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/B4-Lord/Demon-Hub/main/main.lua"))()
+
+Recomendação de executor: https://xeno-executor.com/
+
+
