@@ -592,6 +592,118 @@ LocalPlayer.CharacterAdded:Connect(function(char)
 end)
 
 --==================================================
+-- TELEPORT + GRUDAR (MOCHILA / COSTA A COSTA)
+--==================================================
+
+local alignPos, alignOri
+local attach0, attach1
+local sitTrack
+local targetName = nil
+local watchingChar = nil
+
+local function setNoCollide(char, state)
+    for _,v in ipairs(char:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.CanCollide = not state
+        end
+    end
+end
+
+local function cleanupFollow()
+    if alignPos then alignPos:Destroy() alignPos = nil end
+    if alignOri then alignOri:Destroy() alignOri = nil end
+    if attach0 then attach0:Destroy() attach0 = nil end
+    if attach1 then attach1:Destroy() attach1 = nil end
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local hum = char:FindFirstChild("Humanoid")
+    if hum then
+        hum.Sit = false
+        if sitTrack then
+            sitTrack:Stop()
+            sitTrack = nil
+        end
+    end
+
+    setNoCollide(char, false)
+end
+
+local function playSitAnimation(hum)
+    local anim = Instance.new("Animation")
+    anim.AnimationId = "rbxassetid://2506281703"
+    sitTrack = hum:LoadAnimation(anim)
+    sitTrack:Play()
+end
+
+local function startFollow(playerName)
+    local target = Players:FindFirstChild(playerName)
+    if not target or target == LocalPlayer then
+        notifyMsg("PLAYER INVÁLIDO")
+        return
+    end
+
+    cleanupFollow()
+    targetName = playerName
+
+    local myChar = LocalPlayer.Character
+    local targetChar = target.Character
+    if not myChar or not targetChar then return end
+
+    local myRoot = myChar:WaitForChild("HumanoidRootPart")
+    local targetRoot = targetChar:WaitForChild("HumanoidRootPart")
+    local hum = myChar:WaitForChild("Humanoid")
+
+    setNoCollide(myChar, true)
+
+    -- TELEPORTA ATRÁS
+    myRoot.CFrame = targetRoot.CFrame * CFrame.new(0,0,1.6)
+    task.wait(0.05)
+
+    attach0 = Instance.new("Attachment", myRoot)
+    attach1 = Instance.new("Attachment", targetRoot)
+    attach1.Position = Vector3.new(0,0,1.6)
+    attach0.Orientation = Vector3.new(0,180,0)
+
+    alignPos = Instance.new("AlignPosition", myRoot)
+    alignPos.Attachment0 = attach0
+    alignPos.Attachment1 = attach1
+    alignPos.RigidityEnabled = true
+    alignPos.MaxForce = 100000
+    alignPos.Responsiveness = 200
+
+    alignOri = Instance.new("AlignOrientation", myRoot)
+    alignOri.Attachment0 = attach0
+    alignOri.Attachment1 = attach1
+    alignOri.RigidityEnabled = true
+    alignOri.MaxTorque = 100000
+    alignOri.Responsiveness = 200
+
+    hum.Sit = true
+    playSitAnimation(hum)
+
+    if watchingChar then watchingChar:Disconnect() end
+    watchingChar = target.CharacterAdded:Connect(function()
+        task.wait(0.2)
+        if targetName then
+            startFollow(targetName)
+        end
+    end)
+
+    notifyMsg("GRUDADO EM "..playerName)
+end
+
+Players.PlayerRemoving:Connect(function(plr)
+    if plr.Name == targetName then
+        targetName = nil
+        cleanupFollow()
+        notifyMsg("PLAYER SAIU")
+    end
+end)
+
+
+--==================================================
 -- TELEPORT + OTHERS COM LISTA CLICÁVEL
 --==================================================
 local function createPlayerList(panel, textBox)
@@ -662,6 +774,43 @@ tpGo.TextSize = 16
 tpGo.TextColor3 = Color3.new(1,1,1)
 tpGo.BackgroundColor3 = Color3.fromRGB(70,120,255)
 Instance.new("UICorner", tpGo)
+
+-- TELEPORT + GRUDAR
+local tpFollow = Instance.new("TextButton", tpPanel)
+tpFollow.Size = UDim2.new(0,260,0,45)
+tpFollow.LayoutOrder = 3
+tpFollow.Text = "TELEPORTAR + GRUDAR"
+tpFollow.Font = Enum.Font.GothamBold
+tpFollow.TextSize = 16
+tpFollow.TextColor3 = Color3.new(1,1,1)
+tpFollow.BackgroundColor3 = Color3.fromRGB(120,70,255)
+Instance.new("UICorner", tpFollow)
+
+-- DESGRUDAR
+local tpUnglue = Instance.new("TextButton", tpPanel)
+tpUnglue.Size = UDim2.new(0,260,0,45)
+tpUnglue.LayoutOrder = 4
+tpUnglue.Text = "DESGRUDAR"
+tpUnglue.Font = Enum.Font.GothamBold
+tpUnglue.TextSize = 16
+tpUnglue.TextColor3 = Color3.new(1,1,1)
+tpUnglue.BackgroundColor3 = Color3.fromRGB(80,80,80)
+Instance.new("UICorner", tpUnglue)
+
+tpFollow.MouseButton1Click:Connect(function()
+    if tpBox.Text ~= "" then
+        startFollow(tpBox.Text)
+    else
+        notifyMsg("DIGITE UM NOME")
+    end
+end)
+
+tpUnglue.MouseButton1Click:Connect(function()
+    targetName = nil
+    cleanupFollow()
+    notifyMsg("DESGRUDADO")
+end)
+
 
 tpGo.MouseButton1Click:Connect(function()
     local t = Players:FindFirstChild(tpBox.Text)
