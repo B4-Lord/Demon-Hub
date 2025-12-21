@@ -55,7 +55,9 @@ Execute o código abaixo no seu executor Roblox:
 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/B4-Lord/Demon-Hub/main/main.lua"))()
+```
 
+```lua
 Recomendação de executor: https://xeno-executor.com/
 
 
